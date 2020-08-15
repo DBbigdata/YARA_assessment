@@ -1,0 +1,14 @@
+Task 4
+1.	Develop a CRUD system with respect to a row of data. 
+2.	Expose query built in step number 2 as an API
+3.	Expose an API to search by crop or location
+
+Solution:
+Steps to deploy in cloud:
+1.	Create an EMR cluster in AWS cloud.
+2.	Choose a cluster with multiple nodes based on the need to use case.
+3.	Submit the spark-submit using EMR gateway (Driver Node).
+4.	We are using YARN here as a cluster manager.
+5.	We are using multiple worker nodes are tasks execution in parallel. Each task will be run in separate JVM.
+6.	Once the transformations are executed using actions, results will be shared to Driver node.
+7.	We have Client, cluster and stand alone mode of job execution.
