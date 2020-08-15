@@ -1,0 +1,14 @@
+Generate a histogram of number of users within a given distance to closest city. The end result should roughly resemble below:
+# query to find out the count of users for below range of distance
+df_oj2.filter(df_oj2.distance.between(5,10)).select('user_id').distinct().count()
+Distance	Num Users
+0-5	63656
+5-10	63713
+10-15	62945
+15-20	62947
+20-25	62914
+25-30	59119
+30-35	38742
+>35	  63897
+
+
