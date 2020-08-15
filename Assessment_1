@@ -1,0 +1,40 @@
+from pyspark.sql import SparkSession
+spark = SparkSession.builder.appName("YARAQ1").master("local").getOrCreate()
+#create a dataFrame for user locations data set—df_ul
+df_ul=spark.read.format('csv').option('inferSchema','true').option('header','true').load('C:\\Users\\DELL\\Desktop\\YARA\\user_location.csv')
+#create a dataFrame for world cities data set – df_wc
+df_wc=spark.read.format('csv').option('inferSchema','true').option('header','true').load('C:\\Users\\DELL\\Desktop\\YARA\\world_cities.csv')
+#perform outer join on 2 data sets df_ul and df_wc to get distance between every user in data set 1 with every location in world cities data set
+df_oj=df_ul.crossJoin(df_wc)
+# use sqrt( ((x2-x1 )**2)  + (y2-y1)**2) to get distance between 2 co ordinates
+from pyspark.sql.functions import sqrt
+df_oj2=df_oj.withColumn('dist',(df_oj.latitude-df_oj.lat)**2 + (df_oj.longitude-df_oj.lng)**2).withColumn('distance',sqrt('dist')*10000).select('city','country','user_id','distance')
+#filter out nullable distances
+df_oj2=df_oj2.filter(df_oj2.distance.isNotNull())
+df_oj2.orderBy('distance').show(truncate=False)
+output:
+#NOTE: I have multiplied 10000 to all the values under distance column to get proper values (as highlighted above).
++----------+--------------------+-------+-------+------------------+
+|      city|             address|country|user_id|          distance|
++----------+--------------------+-------+-------+------------------+
+|   Sitapur|Shahpur, Uttar Pr...|  India|  27419|   3.6474271342487|
+|  Bhilwara|Near Mahila Ashra...|  India|  63807| 4.273993353547582|
+| New Delhi|7, Moti Bagh, New...|  India|  50443| 6.291620109485649|
+|      Embu|Kangaru 6 - Embu ...|  Kenya|  34299| 9.289091998738067|
+|    Ratlam|Lok Kalyan Nagar,...|  India|  25369|11.846600552196241|
+|     Hapur|Unnamed Road, Pan...|  India|  63858|12.812627750470739|
+|  Ludhiana|158, Kuldeep Naga...|  India|   8668|13.967536307398802|
+|  Bhilwara|Near Mahila Ashra...|  India|  63807| 14.23767724427256|
+| Bhagalpur|Laxminarayan Ln, ...|  India|  24477|14.729585489880339|
+|    Indore|18, Ware House Rd...|  India|  37066|15.869003075223626|
+|     Delhi|2 Raj Narain Road...|  India|    323|17.180383916664454|
+|   Mathura|Bhuteshwar, Gover...|  India|  63820|17.569362588942486|
+|    Rohtak|Near Mishri Devi ...|  India|   3973|18.211773858591044|
+|      Pune|Pragati Tower, Sh...|  India|  17507|19.092712249299776|
+|   Udaipur|91, University Rd...|  India|   1921| 19.38601977425491|
+|   Nairobi|20 University Way...|  Kenya|  16246| 19.96402780477276|
+|   Mathura|2, Jagannath Puri...|  India|  34250| 21.83627647026336|
+|Ahmednagar|sameer Nagar Chow...|  India|  60720| 22.08002171483905|
+|    Indore|311-B, Prem Trade...|  India|  30004|22.517775387416513|
+|   Sonipat|State Highway 11,...|  India|  15031| 23.61141224306253|
++----------+--------------------+-------+-------+------------------+
