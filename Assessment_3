@@ -1,0 +1,9 @@
+Task 3
+(please answer in plain text)
+We intend to use these queries for a reporting dashboard. How do you design the database and query for reporting performance? 
+
+Solution:
+	Partitioning -> To avoid full table scan of entire data
+	Repartitioning in case of higher volume of data in a single partition
+	Bucketing -> In case of data skewness among partitions
+	Coalescing in case on small volume of data in each partition
